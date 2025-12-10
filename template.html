@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="System Monitoring Dashboard - Real-time system statistics and performance metrics">
+    <title>System Monitor Dashboard</title>
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+    <header class="dashboard-header">
+        <div class="header-content">
+            <div class="header-left">
+                <div class="logo">
+                    <span class="logo-icon">◉</span>
+                </div>
+                <div class="header-text">
+                    <h1>System Monitor</h1>
+                    <p class="header-subtitle">Real-time Performance Dashboard</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="status-indicator">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Live</span>
+                </div>
+                <div class="timestamp">
+                    <span class="timestamp-label">Last updated:</span>
+                    <span class="timestamp-value">{{timestamp}}</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-main">
+        <!-- System Section -->
+        <section class="dashboard-card" id="system-section">
+            <div class="card-header">
+                <span class="card-icon">🖥️</span>
+                <h2 class="card-title">System</h2>
+            </div>
+            <div class="card-content">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Machine Name</span>
+                        <span class="info-value">{{machine_name}}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Operating System</span>
+                        <span class="info-value">{{os_name}}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Uptime</span>
+                        <span class="info-value highlight-green">{{uptime}}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Active Users</span>
+                        <span class="info-value highlight-blue">{{user_count}}</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CPU Section -->
+        <section class="dashboard-card" id="cpu-section">
+            <div class="card-header">
+                <span class="card-icon">⚡</span>
+                <h2 class="card-title">CPU</h2>
+            </div>
+            <div class="card-content">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Cores</span>
+                        <span class="info-value">{{cpu_cores}}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Frequency</span>
+                        <span class="info-value">{{cpu_frequency}}</span>
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-header">
+                        <span class="progress-label">CPU Usage</span>
+                        <span class="progress-value">{{cpu_percent}}%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill progress-cpu" style="width: {{cpu_percent}}%;"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Memory Section -->
+        <section class="dashboard-card" id="memory-section">
+            <div class="card-header">
+                <span class="card-icon">💾</span>
+                <h2 class="card-title">Memory</h2>
+            </div>
+            <div class="card-content">
+                <div class="memory-stats">
+                    <div class="memory-stat">
+                        <span class="stat-value">{{memory_total}}</span>
+                        <span class="stat-label">Total RAM</span>
+                    </div>
+                    <div class="memory-stat">
+                        <span class="stat-value highlight-yellow">{{memory_used}}</span>
+                        <span class="stat-label">Used</span>
+                    </div>
+                    <div class="memory-stat">
+                        <span class="stat-value highlight-green">{{memory_available}}</span>
+                        <span class="stat-label">Available</span>
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-header">
+                        <span class="progress-label">Memory Usage</span>
+                        <span class="progress-value">{{memory_percent}}%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill progress-memory" style="width: {{memory_percent}}%;"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Network Section -->
+        <section class="dashboard-card" id="network-section">
+            <div class="card-header">
+                <span class="card-icon">🌐</span>
+                <h2 class="card-title">Network</h2>
+            </div>
+            <div class="card-content">
+                <div class="network-info">
+                    <div class="info-item full-width">
+                        <span class="info-label">Primary IP Address</span>
+                        <span class="info-value mono">{{primary_ip}}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Hostname</span>
+                        <span class="info-value">{{hostname}}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Interface</span>
+                        <span class="info-value">{{network_interface}}</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- GPU Section -->
+        <section class="dashboard-card" id="gpu-section">
+            <div class="card-header">
+                <span class="card-icon">🎮</span>
+                <h2 class="card-title">GPU</h2>
+            </div>
+            <div class="card-content">
+                <div class="info-grid">
+                    <div class="info-item full-width">
+                        <span class="info-label">GPU Name</span>
+                        <span class="info-value">{{gpu_name}}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Memory Total</span>
+                        <span class="info-value">{{gpu_memory_total}}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Memory Used</span>
+                        <span class="info-value highlight-yellow">{{gpu_memory_used}}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Temperature</span>
+                        <span class="info-value highlight-orange">{{gpu_temperature}}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Driver Version</span>
+                        <span class="info-value">{{gpu_driver}}</span>
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-header">
+                        <span class="progress-label">GPU Usage</span>
+                        <span class="progress-value">{{gpu_percent}}%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill progress-gpu" style="width: {{gpu_percent}}%;"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Disk Usage Section -->
+        <section class="dashboard-card" id="disk-section">
+            <div class="card-header">
+                <span class="card-icon">💿</span>
+                <h2 class="card-title">Disk Usage</h2>
+            </div>
+            <div class="card-content">
+                <div class="disk-list">
+                    <!-- Disk 1 -->
+                    <div class="disk-item">
+                        <div class="disk-header">
+                            <span class="disk-name">{{disk1_name}}</span>
+                            <span class="disk-mount">{{disk1_mount}}</span>
+                        </div>
+                        <div class="disk-stats">
+                            <span class="disk-stat">{{disk1_used}} / {{disk1_total}}</span>
+                            <span class="disk-percent">{{disk1_percent}}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill progress-disk" style="width: {{disk1_percent}}%;"></div>
+                        </div>
+                    </div>
+                    <!-- Disk 2 -->
+                    <div class="disk-item">
+                        <div class="disk-header">
+                            <span class="disk-name">{{disk2_name}}</span>
+                            <span class="disk-mount">{{disk2_mount}}</span>
+                        </div>
+                        <div class="disk-stats">
+                            <span class="disk-stat">{{disk2_used}} / {{disk2_total}}</span>
+                            <span class="disk-percent">{{disk2_percent}}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill progress-disk" style="width: {{disk2_percent}}%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Process Section -->
+        <section class="dashboard-card" id="process-section">
+            <div class="card-header">
+                <span class="card-icon">📊</span>
+                <h2 class="card-title">Top Processes</h2>
+            </div>
+            <div class="card-content">
+                <table class="process-table">
+                    <thead>
+                        <tr>
+                            <th>Process</th>
+                            <th>PID</th>
+                            <th>CPU %</th>
+                            <th>Memory %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="process-name">{{process1_name}}</td>
+                            <td class="process-pid">{{process1_pid}}</td>
+                            <td class="process-cpu highlight-yellow">{{process1_cpu}}%</td>
+                            <td class="process-mem">{{process1_mem}}%</td>
+                        </tr>
+                        <tr>
+                            <td class="process-name">{{process2_name}}</td>
+                            <td class="process-pid">{{process2_pid}}</td>
+                            <td class="process-cpu">{{process2_cpu}}%</td>
+                            <td class="process-mem">{{process2_mem}}%</td>
+                        </tr>
+                        <tr>
+                            <td class="process-name">{{process3_name}}</td>
+                            <td class="process-pid">{{process3_pid}}</td>
+                            <td class="process-cpu">{{process3_cpu}}%</td>
+                            <td class="process-mem">{{process3_mem}}%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Files Section -->
+        <section class="dashboard-card" id="files-section">
+            <div class="card-header">
+                <span class="card-icon">📁</span>
+                <h2 class="card-title">File Statistics</h2>
+            </div>
+            <div class="card-content">
+                <div class="files-summary">
+                    <div class="file-stat-box">
+                        <span class="file-stat-value highlight-blue">{{total_files}}</span>
+                        <span class="file-stat-label">Total Files</span>
+                    </div>
+                    <div class="file-stat-box">
+                        <span class="file-stat-value">{{total_directories}}</span>
+                        <span class="file-stat-label">Directories</span>
+                    </div>
+                    <div class="file-stat-box">
+                        <span class="file-stat-value highlight-green">{{total_size}}</span>
+                        <span class="file-stat-label">Total Size</span>
+                    </div>
+                </div>
+                <div class="file-types">
+                    <h3 class="subsection-title">File Types Breakdown</h3>
+                    <div class="file-type-list">
+                        <div class="file-type-item">
+                            <span class="file-type-icon">📄</span>
+                            <span class="file-type-name">Documents</span>
+                            <span class="file-type-count">{{doc_count}}</span>
+                        </div>
+                        <div class="file-type-item">
+                            <span class="file-type-icon">🖼️</span>
+                            <span class="file-type-name">Images</span>
+                            <span class="file-type-count">{{image_count}}</span>
+                        </div>
+                        <div class="file-type-item">
+                            <span class="file-type-icon">🎵</span>
+                            <span class="file-type-name">Audio</span>
+                            <span class="file-type-count">{{audio_count}}</span>
+                        </div>
+                        <div class="file-type-item">
+                            <span class="file-type-icon">🎬</span>
+                            <span class="file-type-name">Video</span>
+                            <span class="file-type-count">{{video_count}}</span>
+                        </div>
+                        <div class="file-type-item">
+                            <span class="file-type-icon">📦</span>
+                            <span class="file-type-name">Archives</span>
+                            <span class="file-type-count">{{archive_count}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="dashboard-footer">
+        <div class="footer-content">
+            <p class="footer-text">
+                Generated by <strong>System Monitor</strong> • Version {{version}}
+            </p>
+            <p class="footer-timestamp">
+                Report generated at: {{generation_time}}
+            </p>
+        </div>
+    </footer>
+</body>
+</html>
