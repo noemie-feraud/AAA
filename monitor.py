@@ -184,35 +184,35 @@ def get_system_snapshot():
 
 def creer_page_web(data):
     with open("template.html", "r", encoding="utf-8") as f:
-        html = f.read
+        html = f.read()
 
     #ici on remplace les balises une à une pour toutes les sections
 
     #Section système
 
-    html = html.replace("{{machine_name}}", data["system"]["hostname"]) #
-    html = html.replace("{{os_name}}", data["system"]["os"]) #
-    html = html.replace("{{a_remplacer}}", data["system"]["os_version"])   # os_version
-    html = html.replace("{{a_remplacer}}", str(data["system"]["boot_time"])) # boot_time
-    html = html.replace("{{uptime}}", str(data["system"]["uptime"]) + "s") #
-    html = html.replace("{{user_count}}", str(data["system"]["users_count"])) #
-    html = html.replace("{{a_remplacer}}", str(data["system"]["users"]))     # users_list
-    html = html.replace("{{primary_ip}}", data["system"]["ip"]) #
-    html = html.replace("{{timestamp}}", datetime.datetime.now().strftime("%H:%M:%S")) #
+    html = html.replace("{{machine_name}}", data["system"]["hostname"]) 
+    html = html.replace("{{os_name}}", data["system"]["os"]) 
+    html = html.replace("{{a_remplacer}}", data["system"]["os_version"])  
+    html = html.replace("{{a_remplacer}}", str(data["system"]["boot_time"])) 
+    html = html.replace("{{uptime}}", str(data["system"]["uptime"]) + "s") 
+    html = html.replace("{{user_count}}", str(data["system"]["users_count"])) 
+    html = html.replace("{{a_remplacer}}", str(data["system"]["users"]))     
+    html = html.replace("{{primary_ip}}", data["system"]["ip"]) 
+    html = html.replace("{{timestamp}}", datetime.datetime.now().strftime("%H:%M:%S")) 
 
     #Section cpu 
 
-    html = html.replace("{{cpu_percent}}", str(data["cpu"]["usage_percent"])) #
-    html = html.replace("{{cpu_cores}}", str(data["cpu"]["cores_logical"])) #
-    html = html.replace("{{a_remplacer}}", str(data["cpu"]["cores_physical"])) # cores_physical
-    html = html.replace("{{a_remplacer}}", str(data["cpu"]["freq_current"]))   # freq_current
+    html = html.replace("{{cpu_percent}}", str(data["cpu"]["usage_percent"])) 
+    html = html.replace("{{cpu_cores}}", str(data["cpu"]["cores_logical"])) 
+    html = html.replace("{{a_remplacer}}", str(data["cpu"]["cores_physical"])) 
+    html = html.replace("{{cpu_frequency}}", str(data["cpu"]["freq_current"])) 
 
 
     #Section ram
 
-    html = html.replace("{{a_remplacer}}", str(data["memory"]["total"]))       # ram_total
-    html = html.replace("{{a_remplacer}}", str(data["memory"]["used"]))        # ram_used
-    html = html.replace("{{a_remplacer}}", str (data["cpu"]["usage_percent"])) # ram_usage_percent
+    html = html.replace("{{memoty_total}}", str(data["memory"]["total"]))  
+    html = html.replace("{{memory_used}}", str(data["memory"]["used"]))      
+    html = html.replace("{{memory_percent}}", str (data["cpu"]["usage_percent"])) 
 
     #Section fichiers 
 
@@ -220,15 +220,15 @@ def creer_page_web(data):
     html = html.replace("{{a_remplacer}}", str(data["files_basic"]["files_by_extension"].get(".py", 0)))
     html = html.replace("{{a_remplacer}}", str(data["files_basic"]["files_by_extension"].get(".pdf", 0)))
     html = html.replace("{{a_remplacer}}", str(data["files_basic"]["files_by_extension"].get(".jpg", 0)))
-    html = html.replace("{{a_remplacer}}", str(sum(data["files_basic"]["files_by_extension"].values()))) # total
+    html = html.replace("{{a_remplacer}}", str(sum(data["files_basic"]["files_by_extension"].values()))) 
 
     #Section fichiers avancés
 
     adv = data["files_advanced"]
     html = html.replace("{{total_files}}", str(sum(adv["files_by_extension"].values())))
-    html = html.replace("{{a_remplacer}}", str(adv["files_by_extension"]))      # files_by_extension
-    html = html.replace("{{a_remplacer}}", str(adv["space_by_extension"]))      # space_by_extension
-    html = html.replace("{{a_remplacer}}", str(adv["percentage_by_extension"])) # percentage_by_extension
+    html = html.replace("{{a_remplacer}}", str(adv["files_by_extension"]))      
+    html = html.replace("{{a_remplacer}}", str(adv["space_by_extension"]))      
+    html = html.replace("{{a_remplacer}}", str(adv["percentage_by_extension"])) 
 
     # Top 10 fichiers les plus lourds
     largest = adv["largest_files"]
