@@ -182,7 +182,46 @@ def get_system_snapshot():
 
     return snapshot
 
+def creer_page_web(data):
+    with open("template.html", "r", encoding="utf-8") as f:
+        html = f.read
+
+    #ici on remplace les balises une à une pour toutes les sections
+
+    #Section système
+
+    html = html.replace("{{machine_name}}", data["system"]["hostname"])#
+    html = html.replace("{{os_name}}", data["system"]["os"])#
+    html = html.replace("{{uptime}}", str(data["system"]["uptime"]) + "s")#
+    html = html.replace("{{user_count}}", str(data["system"]["users_count"]))#
+    html = html.replace("{{primary_ip}}", data["system"]["ip"])#
+    html = html.replace("{{timestamp}}", datetime.datetime.now().strftime("%H:%M:%S"))
+
+    #Section cpu et ram
+
+    html = html.replace("{{cpu_percent}}", str(data["cpu"]["usage_percent"]))#
+    html = html.replace("{{cpu_cores}}", str(data["cpu"]["cores_logical"]))#
+    html = html.replace("{{memory_core}}", str (data["cpu"]["usage_percent"]))#
+
+    #Section fichiers 
+
+    infos_fichiers = data["files_advanced"]#
+    nb_total = sum(infos_fichiers["files_by_extension"].values())
+    html = html.replace("{{total_files}}", str(nb_total))#
+
+    # Section Processus 
+    top_procs = data["processes"]["top_cpu"]#
+    if len(top_procs) > 0:
+        html = html.replace("{{process1_name}}", top_procs[0]["name"])#
+        html = html.replace("{{process1_cpu}}", str(top_procs[0]["cpu_percent"]))#
+
+    #ici on enregistre le résultat dans un nouveau fichier
+    
+    with open("index.html", "w", encoding="utf-8") as f:
+        f.write(html)
+
 # --- MAIN PROGRAM ---
 if __name__ == "__main__":
     result = get_system_snapshot()
-    print(result)
+    creer_page_web(result)
+    print("La page index.html a été générée !")
