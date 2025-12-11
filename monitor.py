@@ -190,33 +190,108 @@ def creer_page_web(data):
 
     #Section système
 
-    html = html.replace("{{machine_name}}", data["system"]["hostname"])#
-    html = html.replace("{{os_name}}", data["system"]["os"])#
-    html = html.replace("{{uptime}}", str(data["system"]["uptime"]) + "s")#
-    html = html.replace("{{user_count}}", str(data["system"]["users_count"]))#
-    html = html.replace("{{primary_ip}}", data["system"]["ip"])#
-    html = html.replace("{{timestamp}}", datetime.datetime.now().strftime("%H:%M:%S"))
+    html = html.replace("{{machine_name}}", data["system"]["hostname"]) #
+    html = html.replace("{{os_name}}", data["system"]["os"]) #
+    html = html.replace("{{a_remplacer}}", data["system"]["os_version"])   # os_version
+    html = html.replace("{{a_remplacer}}", str(data["system"]["boot_time"])) # boot_time
+    html = html.replace("{{uptime}}", str(data["system"]["uptime"]) + "s") #
+    html = html.replace("{{user_count}}", str(data["system"]["users_count"])) #
+    html = html.replace("{{a_remplacer}}", str(data["system"]["users"]))     # users_list
+    html = html.replace("{{primary_ip}}", data["system"]["ip"]) #
+    html = html.replace("{{timestamp}}", datetime.datetime.now().strftime("%H:%M:%S")) #
 
-    #Section cpu et ram
+    #Section cpu 
 
-    html = html.replace("{{cpu_percent}}", str(data["cpu"]["usage_percent"]))#
-    html = html.replace("{{cpu_cores}}", str(data["cpu"]["cores_logical"]))#
-    html = html.replace("{{memory_core}}", str (data["cpu"]["usage_percent"]))#
+    html = html.replace("{{cpu_percent}}", str(data["cpu"]["usage_percent"])) #
+    html = html.replace("{{cpu_cores}}", str(data["cpu"]["cores_logical"])) #
+    html = html.replace("{{a_remplacer}}", str(data["cpu"]["cores_physical"])) # cores_physical
+    html = html.replace("{{a_remplacer}}", str(data["cpu"]["freq_current"]))   # freq_current
+
+
+    #Section ram
+
+    html = html.replace("{{a_remplacer}}", str(data["memory"]["total"]))       # ram_total
+    html = html.replace("{{a_remplacer}}", str(data["memory"]["used"]))        # ram_used
+    html = html.replace("{{a_remplacer}}", str (data["cpu"]["usage_percent"])) # ram_usage_percent
 
     #Section fichiers 
 
-    infos_fichiers = data["files_advanced"]#
-    nb_total = sum(infos_fichiers["files_by_extension"].values())
-    html = html.replace("{{total_files}}", str(nb_total))#
+    html = html.replace("{{a_remplacer}}", str(data["files_basic"]["files_by_extension"].get(".txt", 0)))
+    html = html.replace("{{a_remplacer}}", str(data["files_basic"]["files_by_extension"].get(".py", 0)))
+    html = html.replace("{{a_remplacer}}", str(data["files_basic"]["files_by_extension"].get(".pdf", 0)))
+    html = html.replace("{{a_remplacer}}", str(data["files_basic"]["files_by_extension"].get(".jpg", 0)))
+    html = html.replace("{{a_remplacer}}", str(sum(data["files_basic"]["files_by_extension"].values()))) # total
 
-    # Section Processus 
-    top_procs = data["processes"]["top_cpu"]#
-    if len(top_procs) > 0:
-        html = html.replace("{{process1_name}}", top_procs[0]["name"])#
-        html = html.replace("{{process1_cpu}}", str(top_procs[0]["cpu_percent"]))#
+    #Section fichiers avancés
+
+    adv = data["files_advanced"]
+    html = html.replace("{{total_files}}", str(sum(adv["files_by_extension"].values())))
+    html = html.replace("{{a_remplacer}}", str(adv["files_by_extension"]))      # files_by_extension
+    html = html.replace("{{a_remplacer}}", str(adv["space_by_extension"]))      # space_by_extension
+    html = html.replace("{{a_remplacer}}", str(adv["percentage_by_extension"])) # percentage_by_extension
+
+    # Top 10 fichiers les plus lourds
+    largest = adv["largest_files"]
+    for i in range(10):
+        if i < len(largest):
+            html = html.replace("{{a_remplacer}}", largest[i]["path"])
+            html = html.replace("{{a_remplacer}}", str(largest[i]["size"]))
+        else:
+            html = html.replace("{{a_remplacer}}", "—")
+            html = html.replace("{{a_remplacer}}", "0")
+
+    # Section processus cpu
+    top_cpu = data["processes"]["top_cpu"]
+    if len(top_cpu) > 0:
+        html = html.replace("{{process1_name}}", top_cpu[0]["name"])
+        html = html.replace("{{process1_cpu}}", str(top_cpu[0]["cpu_percent"]))
+    else:
+        html = html.replace("{{process1_name}}", "—")
+        html = html.replace("{{process1_cpu}}", "0")
+
+    if len(top_cpu) > 1:
+        html = html.replace("{{process2_name}}", top_cpu[1]["name"])
+        html = html.replace("{{process2_cpu}}", str(top_cpu[1]["cpu_percent"]))
+    else:
+        html = html.replace("{{process2_name}}", "—")
+        html = html.replace("{{process2_cpu}}", "0")
+
+    if len(top_cpu) > 2:
+        html = html.replace("{{process3_name}}", top_cpu[2]["name"])
+        html = html.replace("{{process3_cpu}}", str(top_cpu[2]["cpu_percent"]))
+    else:
+        html = html.replace("{{process3_name}}", "—")
+        html = html.replace("{{process3_cpu}}", "0")
+
+    #Section processus ram
+
+    top_ram = data["processes"]["top_ram"]
+    if len(top_ram) > 0:
+        html = html.replace("{{ram_process1_name}}", top_ram[0]["name"])
+        html = html.replace("{{ram_process1_usage}}", str(top_ram[0]["ram_percent"]))
+    else:
+        html = html.replace("{{ram_process1_name}}", "—")
+        html = html.replace("{{ram_process1_usage}}", "0")
+
+    if len(top_ram) > 1:
+        html = html.replace("{{ram_process2_name}}", top_ram[1]["name"])
+        html = html.replace("{{ram_process2_usage}}", str(top_ram[1]["ram_percent"]))
+    else:
+        html = html.replace("{{ram_process2_name}}", "—")
+        html = html.replace("{{ram_process2_usage}}", "0")
+
+    if len(top_ram) > 2:
+        html = html.replace("{{ram_process3_name}}", top_ram[2]["name"])
+        html = html.replace("{{ram_process3_usage}}", str(top_ram[2]["ram_percent"]))
+    else:
+        html = html.replace("{{ram_process3_name}}", "—")
+        html = html.replace("{{ram_process3_usage}}", "0")
+
+    # all_count non utilisé → balise générique
+    html = html.replace("{{a_remplacer}}", str(data["processes"]["all_count"]))
 
     #ici on enregistre le résultat dans un nouveau fichier
-    
+
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(html)
 
