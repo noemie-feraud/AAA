@@ -31,7 +31,7 @@ bash
 Copier le code
 (dans le dossier du projet, venv activé si utilisé)
 
-```pip install psutil
+```pip install psutil```
 
 ## Utilisation
 
@@ -41,10 +41,10 @@ bash
 Copier le code
 
 # Windows
-```python monitor.py
+```python monitor.py```
 
 # Linux / macOS
-```python3 monitor.py
+```python3 monitor.py```
 - Le script régénère index.html toutes les 30 secondes.
 
 # Ouvrir index.html dans le navigateur
@@ -69,7 +69,7 @@ Fichiers : analyse “de base” et “avancée” par extension, espace disque 
  
 Des exemples de rendu sont disponibles dans le dossier :
 
-screenshots/
+```screenshots/```
 
 (Non nécessaires à l’exécution, uniquement pour illustrer le projet.)
 
@@ -89,6 +89,6 @@ screenshots/
 
 ## Auteur
 
-Nom : Terry Fall, Natalia Giraldo, Noémie Feraud 
+```Nom : Terry Fall, Natalia Giraldo, Noémie Feraud ```
 Contexte : Projet étudiant – Challenge Triple A
 Github : https://github.com/noemie-feraud
