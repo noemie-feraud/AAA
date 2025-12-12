@@ -1,0 +1,29 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Environnements virtuels
+venv/
+.env/
+.venv/
+env/
+
+# Fichiers de log / bases locales
+*.log
+*.sqlite3
+*.db
+
+# --- Éditeurs / OS ---
+.vscode/
+.idea/
+*.code-workspace
+
+.DS_Store
+Thumbs.db
+
+# Sauvegardes / fichiers temporaires
+*~
+*.swp
+*.tmp

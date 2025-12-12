@@ -1,0 +1,635 @@
+/* ============================================
+   System Monitor Dashboard - Pure CSS Styles
+   ============================================ */
+
+/* CSS Variables */
+:root {
+
+    --color-bg: hsl(220, 18%, 13%);
+    --color-bg-secondary: hsl(220, 18%, 13%);
+    --color-card: hsl(214, 7%, 21%);
+    --color-card-hover: hsl(220, 16%, 18%);
+    --color-border: hsl(220, 14%, 22%);
+    
+    --color-text: hsl(220, 20%, 95%);
+    --color-text-muted: hsl(220, 15%, 60%);
+    --color-text-secondary: hsl(220, 12%, 45%);
+    
+    --color-accent: hsl(82, 85%, 55%);
+    --color-accent-glow: hsla(82, 85%, 55%, 0.3);
+    
+    --color-highlight-blue: hsl(210, 100%, 65%);
+    --color-highlight-green: hsl(142, 70%, 55%);
+    --color-highlight-yellow: hsl(45, 100%, 60%);
+    --color-highlight-orange: hsl(25, 95%, 60%);
+    --color-highlight-red: hsl(0, 85%, 60%);
+    --color-highlight-purple: hsl(270, 70%, 65%);
+    
+    /* Gradients */
+    --gradient-cpu: linear-gradient(90deg, hsl(210, 100%, 55%), hsl(190, 100%, 50%));
+    --gradient-memory: linear-gradient(90deg, hsl(270, 80%, 60%), hsl(300, 80%, 60%));
+    --gradient-disk: linear-gradient(90deg, hsl(142, 70%, 45%), hsl(82, 85%, 55%));
+    --gradient-gpu: linear-gradient(90deg, hsl(25, 95%, 50%), hsl(45, 100%, 55%));
+    
+    /* Spacing */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+    
+    /* Border Radius */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    
+    /* Shadows */
+    --shadow-card: 0 4px 20px hsla(0, 0%, 0%, 0.3);
+    --shadow-card-hover: 0 8px 30px hsla(0, 0%, 0%, 0.4);
+    --shadow-glow: 0 0 30px var(--color-accent-glow);
+    
+    /* Transitions */
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.25s ease;
+    --transition-slow: 0.4s ease;
+}
+
+/* Reset & Base */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+/* ============================================
+   Header Styles
+   ============================================ */
+.dashboard-header {
+    background: linear-gradient(180deg, var(--color-bg-secondary), var(--color-bg));
+    border-bottom: 1px solid var(--color-border);
+    padding: var(--spacing-lg) var(--spacing-xl);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+}
+
+.header-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.logo {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, var(--color-accent), hsl(82, 85%, 40%));
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-glow);
+}
+
+.logo-icon {
+    font-size: 1.5rem;
+    color: hsl(220, 20%, 10%);
+}
+
+.header-text h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-text);
+}
+
+.header-subtitle {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: hsla(142, 70%, 55%, 0.15);
+    border: 1px solid hsla(142, 70%, 55%, 0.3);
+    border-radius: var(--radius-lg);
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--color-highlight-green);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.1); }
+}
+
+.status-text {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-highlight-green);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.timestamp {
+    text-align: right;
+}
+
+.timestamp-label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+}
+
+.timestamp-value {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    font-family: 'Consolas', 'Monaco', monospace;
+}
+
+/* ============================================
+   Main Content
+   ============================================ */
+.dashboard-main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: var(--spacing-xl);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: var(--spacing-lg);
+}
+
+/* ============================================
+   Card Styles
+   ============================================ */
+.dashboard-card {
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-card);
+    transition: all var(--transition-normal);
+}
+
+.dashboard-card:hover {
+    background: var(--color-card-hover);
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-2px);
+    border-color: hsla(82, 85%, 55%, 0.3);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.card-icon {
+    font-size: 1.25rem;
+}
+
+.card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.card-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+/* ============================================
+   Info Grid
+   ============================================ */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.info-item.full-width {
+    grid-column: span 2;
+}
+
+.info-label {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.info-value {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--color-text);
+}
+
+.info-value.mono {
+    font-family: 'Consolas', 'Monaco', monospace;
+    color: var(--color-accent);
+}
+
+/* Highlight Colors */
+.highlight-blue { color: var(--color-highlight-blue); }
+.highlight-green { color: var(--color-highlight-green); }
+.highlight-yellow { color: var(--color-highlight-yellow); }
+.highlight-orange { color: var(--color-highlight-orange); }
+.highlight-red { color: var(--color-highlight-red); }
+.highlight-purple { color: var(--color-highlight-purple); }
+
+/* ============================================
+   Progress Bars
+   ============================================ */
+.progress-container {
+    margin-top: var(--spacing-sm);
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+}
+
+.progress-label {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+}
+
+.progress-value {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.progress-bar {
+    height: 8px;
+    background: hsla(220, 15%, 25%, 0.5);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width var(--transition-slow);
+}
+
+.progress-cpu { background: var(--gradient-cpu); }
+.progress-memory { background: var(--gradient-memory); }
+.progress-disk { background: var(--gradient-disk); }
+.progress-gpu { background: var(--gradient-gpu); }
+
+/* ============================================
+   Memory Section
+   ============================================ */
+.memory-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-md);
+    text-align: center;
+}
+
+.memory-stat {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.stat-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text);
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+}
+
+/* ============================================
+   Disk Section
+   ============================================ */
+.disk-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.disk-item {
+    padding: var(--spacing-md);
+    background: hsla(220, 15%, 20%, 0.5);
+    border-radius: var(--radius-md);
+}
+
+.disk-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+}
+
+.disk-name {
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.disk-mount {
+    font-size: 0.75rem;
+    font-family: 'Consolas', 'Monaco', monospace;
+    color: var(--color-text-muted);
+}
+
+.disk-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+    font-size: 0.875rem;
+}
+
+.disk-stat {
+    color: var(--color-text-muted);
+}
+
+.disk-percent {
+    font-weight: 600;
+    color: var(--color-highlight-green);
+}
+
+/* ============================================
+   Process Table
+   ============================================ */
+.process-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.process-table th,
+.process-table td {
+    padding: var(--spacing-sm) var(--spacing-md);
+    text-align: left;
+}
+
+.process-table th {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.process-table td {
+    font-size: 0.875rem;
+    border-bottom: 1px solid hsla(220, 14%, 22%, 0.5);
+}
+
+.process-table tr:last-child td {
+    border-bottom: none;
+}
+
+.process-table tr:hover {
+    background: hsla(220, 15%, 20%, 0.3);
+}
+
+.process-name {
+    font-weight: 500;
+    color: var(--color-text);
+}
+
+.process-pid {
+    font-family: 'Consolas', 'Monaco', monospace;
+    color: var(--color-text-muted);
+}
+
+.process-cpu,
+.process-mem {
+    font-weight: 500;
+}
+
+/* ============================================
+   Files Section
+   ============================================ */
+.files-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.file-stat-box {
+    text-align: center;
+    padding: var(--spacing-md);
+    background: hsla(220, 15%, 20%, 0.5);
+    border-radius: var(--radius-md);
+}
+
+.file-stat-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-text);
+}
+
+.file-stat-label {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+}
+
+.subsection-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: var(--spacing-md);
+}
+
+.file-type-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.file-type-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: hsla(220, 15%, 20%, 0.3);
+    border-radius: var(--radius-sm);
+    transition: background var(--transition-fast);
+}
+
+.file-type-item:hover {
+    background: hsla(220, 15%, 25%, 0.5);
+}
+
+.file-type-icon {
+    font-size: 1rem;
+}
+
+.file-type-name {
+    flex: 1;
+    font-size: 0.875rem;
+    color: var(--color-text);
+}
+
+.file-type-count {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-accent);
+}
+
+/* ============================================
+   Footer
+   ============================================ */
+.dashboard-footer {
+    background: var(--color-bg-secondary);
+    border-top: 1px solid var(--color-border);
+    padding: var(--spacing-lg) var(--spacing-xl);
+    margin-top: var(--spacing-xl);
+}
+
+.footer-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.footer-text {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    margin-bottom: var(--spacing-xs);
+}
+
+.footer-text strong {
+    color: var(--color-accent);
+}
+
+.footer-timestamp {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+    font-family: 'Consolas', 'Monaco', monospace;
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+@media (max-width: 768px) {
+    .dashboard-main {
+        grid-template-columns: 1fr;
+        padding: var(--spacing-md);
+    }
+    
+    .header-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .header-left {
+        flex-direction: column;
+    }
+    
+    .header-right {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+    
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .info-item.full-width {
+        grid-column: span 1;
+    }
+    
+    .memory-stats,
+    .files-summary {
+        grid-template-columns: 1fr;
+    }
+    
+    .process-table {
+        font-size: 0.8rem;
+    }
+    
+    .process-table th,
+    .process-table td {
+        padding: var(--spacing-xs) var(--spacing-sm);
+    }
+}
+
+@media (max-width: 480px) {
+    html {
+        font-size: 14px;
+    }
+    
+    .dashboard-card {
+        padding: var(--spacing-md);
+    }
+    
+    .logo {
+        width: 40px;
+        height: 40px;
+    }
+}

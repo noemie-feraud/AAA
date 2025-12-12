@@ -1,92 +1,210 @@
-OBJECTIF
-  Produire un “instantané” (snapshot) complet de l’état de la machine :
-    - utilisation CPU (coeurs, fréquence, charge globale)
-    - mémoire RAM (totale, utilisée, pourcentage)
-    - informations système (nom machine, OS / version, démarrage, uptime, utilisateurs, IP)
-    - liste des processus actifs avec leur consommation CPU & RAM
-    - top 3 des processus les plus gourmands (CPU & RAM)
+# Idéation – Script de monitoring système (Python + Dashboard HTML)
 
-IMPORTS
+---
 
+## OBJECTIF
+
+Produire un **“instantané” (snapshot)** complet de l’état de la machine **et du système de fichiers**, 
+puis générer une page web de monitoring (`index.html`) à partir d’un template (`template.html`) :
+
+- **CPU**
+  - taux d’utilisation CPU global
+  - nombre de cœurs physiques / logiques
+  - fréquence actuelle
+
+- **Mémoire RAM**
+  - RAM totale
+  - RAM utilisée
+  - RAM “disponible” estimée
+  - pourcentage d’utilisation  
+  → affichage final en **GB** dans le dashboard
+
+- **Informations système**
+  - nom de la machine (hostname)
+  - système d’exploitation + version
+  - date / heure de démarrage (boot)
+  - uptime formaté (HHh MMm SSs)
+  - utilisateurs connectés (liste + nombre)
+  - adresse IP principale de la machine
+
+- **Processus**
+  - liste des processus actifs (PID, nom, CPU %, RAM %)
+  - top 3 CPU
+  - top 3 RAM
+  - nombre total de processus
+
+- **Fichiers (analyse d’un répertoire)**
+  - dossier cible à analyser : `directory_to_analyze`
+  - analyse “de base” sur quelques extensions : `.txt`, `.py`, `.pdf`, `.jpg`
+  - analyse “avancée” sur plus d’extensions : `.csv`, `.log`, `.md`, `.json`, `.xml`, `.html`, `.png`, etc.
+  - nombre de fichiers par extension
+  - espace disque utilisé par extension
+  - pourcentage de fichiers par extension
+  - top 10 des plus gros fichiers (chemin + taille)
+
+- **Front / Dashboard HTML**
+  - utilisation d’un fichier `template.html` avec des placeholders `{{...}}`
+  - génération d’un `index.html` à jour à chaque itération
+  - rafraîchissement régulier (boucle Python + balise `<meta http-equiv="refresh">`)
+
+---
+
+## IMPORTS
+
+```python
 import psutil
 import socket
 import platform
 import datetime
-
+import os
+import time
 VARIABLES / DONNÉES
-  cpu_cores_physical         // entier : nombre de cœurs physiques
-  cpu_cores_logical          // entier : nombre de cœurs logiques (threads)
-  cpu_freq_current           // nombre : fréquence actuelle du CPU
-  cpu_usage_percent          // nombre : pourcentage d’utilisation CPU global
+CPU
+cpu_cores_physical
+// entier : nombre de cœurs physiques
 
-  ram_total                  // nombre : capacité RAM totale
-  ram_used                   // nombre : RAM utilisée actuellement
-  ram_usage_percent          // nombre : pourcentage de RAM utilisée
+cpu_cores_logical
+// entier : nombre de cœurs logiques (threads)
 
-  hostname                   // chaîne : nom de la machine
-  os_name                    // chaîne : nom du système d’exploitation
-  os_version                 // chaîne : version / release du système
-  boot_time                  // date / timestamp : moment de démarrage du système
-  uptime                     // durée : temps écoulé depuis le démarrage
-  users_connected            // entier : nombre d’utilisateurs connectés
-  users_list                 // liste de chaînes : identifiants / noms des utilisateurs connectés
-  ip_address                 // chaîne : adresse IP principale (locale)
+cpu_freq_current
+// nombre : fréquence actuelle du CPU
 
-  processes_list             // tableau / liste d’objets processus
-    chaque objet_processe contient :
-      - pid                  // entier : identifiant du processus
-      - name                 // chaîne : nom du processus
-      - cpu_percent          // nombre : pourcentage CPU utilisé par le processus
-      - ram_percent          // nombre : pourcentage RAM utilisé par le processus
+cpu_usage_percent
+// nombre : pourcentage global d’utilisation du CPU
 
-  top_3_cpu_processes        // liste de 3 objets processus les plus gourmands en CPU
-  top_3_ram_processes        // liste de 3 objets processus les plus gourmands en RAM
+RAM
+ram_total                 // nombre : capacité RAM totale en octets
+ram_used                  // nombre : quantité de RAM utilisée en octets
+ram_usage_percent         // nombre : pourcentage de RAM utilisée
 
-DÉBUT
+Ces valeurs restent en octets dans le code, puis sont converties en GB au moment de l’affichage dans la page HTML.
 
-  // --- Collecte CPU ---
-  Obtenir cpu_cores_physical
-  Obtenir cpu_cores_logical
-  Obtenir cpu_freq_current
-  Mesurer cpu_usage_percent
+SYSTÈME
+hostname                  // chaîne : nom de la machine
+os_name                   // chaîne : nom du système d’exploitation
+os_version                // chaîne : version / release du système
+boot_time_ts              // nombre (timestamp) : moment de démarrage du système (secondes depuis epoch)
+uptime_seconds            // entier : temps écoulé depuis le démarrage en secondes
+users_list                // liste de chaînes : identifiants / noms des utilisateurs connectés
+users_count               // entier : nombre d’utilisateurs connectés
+ip_address                // chaîne : adresse IP principale (locale) de la machine
 
-  // --- Collecte RAM ---
-  Obtenir ram_total
-  Obtenir ram_used
-  Calculer ram_usage_percent
+PROCESSUS
+processes_list            // liste d’objets “processus”, chaque objet contient :
+pid                       // entier : identifiant du processus
+name                      // chaîne : nom du processus
+cpu_percent               // nombre : pourcentage CPU utilisé
+ram_percent               // nombre : pourcentage RAM utilisé
+top_cpu_processes         // liste des 3 processus les plus gourmands en CPU
+top_ram_processes         // liste des 3 processus les plus gourmands en RAM
+all_count                 // entier : nombre total de processus (longueur de processes_list)
 
-  // --- Collecte des informations système ---
-  Obtenir hostname
-  Obtenir os_name et os_version
-  Obtenir boot_time
-  Calculer uptime = (date_maintenant − boot_time)
-  Obtenir users_list
-  Définir users_connected = longueur(users_list)
-  Déterminer ip_address (adresse IP “principale” / par défaut)
+Pour stabiliser les valeurs de CPU par processus, il y a deux passes sur les processus avec un petit sleep entre les deux.
 
-  // --- Collecte des processus ---
-  Initialiser processes_list comme une liste vide
-  POUR chaque processus actif FAIRE
-    Lire pid, name
-    Mesurer cpu_percent du processus
-    Mesurer ram_percent du processus
-    Ajouter à processes_list un objet { pid, name, cpu_percent, ram_percent }
-  FIN POUR
+FICHIERS / ANALYSE DISQUE
+directory_to_analyze      // chaîne : chemin du dossier à analyser (exemple : C:/school/AAA)
+base_extensions           // liste : extensions pour l’analyse “de base”
+.txt, .py, .pdf, .jpg
+extended_extensions       // liste : extensions pour l’analyse “avancée”
+.txt, .py, .pdf, .jpg, .csv, .log, .md, .json, .xml, .html, .png, ...
 
-  // --- Sélection des top processus ---
-  Trier processes_list par cpu_percent descendant → prendre 3 premiers → top_3_cpu_processes
-  Trier processes_list par ram_percent descendant → prendre 3 premiers → top_3_ram_processes
+Pour chaque appel à analyze_directory(directory, extensions), on obtient un objet de résultats :
 
-  // --- Construction du résultat final ---
-  Créer un objet resultat contenant :
-    CPU_info : { cpu_cores_physical, cpu_cores_logical, cpu_freq_current, cpu_usage_percent }
-    RAM_info : { ram_total, ram_used, ram_usage_percent }
-    System_info : { hostname, os_name, os_version, boot_time, uptime, users_connected, users_list, ip_address }
-    Processes : processes_list
-    Top_CPU : top_3_cpu_processes
-    Top_RAM : top_3_ram_processes
+files_by_extension        // dict : { extension → nombre de fichiers }
+space_by_extension        // dict : { extension → espace total en octets }
+(éventuellement converti en GB pour l’affichage)
+percentage_by_extension   // dict : { extension → pourcentage du nombre de fichiers }
+(formater plus tard avec :.2f et %)
+largest_files             // liste des 10 plus gros fichiers pour ces extensions, chaque entrée :
+path // chemin complet du fichier
+size // taille en octets
 
-  // --- Sortie / Export (selon usage) ---
-  Afficher / Retourner / Exporter resultat
+En pratique :
 
-FIN
+files_basic = analyse “de base” sur directory_to_analyze
+files_advanced = analyse “avancée” sur le même répertoire
+
+SNAPSHOT GLOBAL
+L’idée est de regrouper toutes les infos dans un seul dictionnaire snapshot :
+
+snapshot["cpu"]
+{ cores_physical, cores_logical, freq_current, usage_percent }
+
+snapshot["memory"]
+{ total, used, usage_percent }
+
+snapshot["system"]
+{ hostname, os, os_version, boot_time, uptime, users_count, users, ip }
+
+snapshot["processes"]
+{ all_count, top_cpu, top_ram }
+
+snapshot["files_basic"]   // résultats de analyze_directory pour l’analyse de base
+snapshot["files_advanced"]// résultats de analyze_directory pour l’analyse avancée
+
+Ce snapshot sert ensuite de “source de vérité” pour remplir tous les {{placeholders}} dans le template HTML.
+
+FONCTIONS – Idée générale
+analyze_directory(directory, extensions):
+
+Parcourt récursivement un dossier (os.walk)
+Compte le nombre de fichiers par extension ciblée
+Additionne la taille totale par extension
+Calcule le pourcentage de chaque extension par rapport au nombre total de fichiers
+Trie et garde les 10 plus gros fichiers (chemin + taille)
+Retourne un objet de résultats réutilisable pour :
+
+les stats “de base”
+les stats “avancées”
+
+get_system_snapshot()
+Regroupe tout ce qui est dynamique :
+
+infos CPU (cœurs, fréquence, usage global)
+infos RAM (total, utilisé, pourcentage)
+infos système (hostname, OS, version, boot, uptime, users, IP)
+infos processus (liste complète + top CPU + top RAM)
+infos fichiers (analyse basique + avancée sur directory_to_analyze)
+Utilise une petite pause (time.sleep) entre deux lectures pour que les % CPU par processus soient cohérents
+Construit et renvoie un dictionnaire snapshot structuré
+
+Fonctions de formatage:
+
+format_timestamp(ts)                // transforme un timestamp en date/heure lisible (YYYY-MM-DD HH:MM:SS)
+format_seconds_to_hms(seconds)      // transforme un nombre de secondes en HHh MMm SSs pour l’uptime
+Ces fonctions servent uniquement à rendre l’affichage plus propre dans le dashboard.
+
+create_web_page(snapshot):
+
+Charge le contenu de template.html
+Remplace tous les {{...}} par les valeurs issues de snapshot :
+section System (hostname, OS, boot time, uptime, users, IP, timestamp…)
+section CPU (pourcentage, cœurs, fréquence…)
+section Memory (valeurs converties en GB + pourcentage)
+section Process (top 3 CPU, top 3 RAM, nombre total)
+section Files (stats de base + avancées, top 10 fichiers)
+footer (heure de génération)
+Écrit le résultat final dans index.html
+
+BOUCLE PRINCIPALE
+Le script tourne dans une boucle infinie :
+
+appelle get_system_snapshot()
+appelle create_web_page(snapshot) pour régénérer index.html
+affiche un message dans le terminal type :
+index.html updated!
+fait une pause (time.sleep(10)) avant de recommencer
+
+En parallèle, la page HTML contient une balise meta du type :
+
+html
+Copier le code
+<meta http-equiv="refresh" content="10">
+→ le navigateur recharge automatiquement index.html toutes les 10 secondes,
+pendant que Python met à jour le fichier côté machine.
+
+Résultat : un dashboard statique, mais mis à jour en continu, qui donne l’impression d’un monitoring “en temps réel” pour le projet.
+
+makefile
+Copier le code
+::contentReference[oaicite:0]{index=0}

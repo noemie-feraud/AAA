@@ -1,138 +1,248 @@
-IMPORTS
-    import psutil
-    import socket
-    import platform
-    import datetime
-    import os  // Pour l'analyse de fichiers
+--- PSEUDOCODE ---
 
-VARIABLES
-    // CPU, RAM, Système, Processus existants 
-    cpu_cores_physical       ← entier
-    cpu_cores_logical        ← entier
-    cpu_freq_current         ← réel
-    cpu_usage_percent        ← réel
+IMPORTS  
+    import psutil  
+    import socket  
+    import platform  
+    import datetime  
+    import os      // Pour l'analyse de fichiers  
+    import time    // Pour la mise à jour régulière et la mesure CPU des process  
 
-    ram_total                ← réel
-    ram_used                 ← réel
-    ram_usage_percent        ← réel
+VARIABLES  
+    // CPU, RAM, Système, Processus  
+    cpu_cores_physical       ← entier  
+    cpu_cores_logical        ← entier  
+    cpu_freq_current         ← réel  
+    cpu_usage_percent        ← réel  
 
-    hostname                 ← texte
-    os_name                  ← texte
-    os_version               ← texte
-    boot_time_ts             ← nombre
-    uptime_seconds           ← nombre
-    users_list               ← liste de texte
-    users_count              ← entier
-    ip_address               ← texte
+    ram_total                ← réel  
+    ram_used                 ← réel  
+    ram_usage_percent        ← réel  
 
-    processes_list           ← liste de ProcessInfo
-    top_cpu_processes        ← liste de ProcessInfo
-    top_ram_processes        ← liste de ProcessInfo
+    hostname                 ← texte  
+    os_name                  ← texte  
+    os_version               ← texte  
+    boot_time_ts             ← nombre  
+    uptime_seconds           ← nombre  
+    users_list               ← liste de texte  
+    users_count              ← entier  
+    ip_address               ← texte  
 
-    // Analyse de fichiers 
-    dossier_a_analyser       ← texte
-    extensions_base          ← liste[texte] ← [".txt", ".py", ".pdf", ".jpg"]
-    extensions_etendues      ← liste[texte] ← [".txt", ".py", ".pdf", ".jpg", ".csv", ".log", ".md", ".json", ".xml", ".html", ".png"]
-    fichiers_par_extension   ← dictionnaire<texte, entier>
-    espace_par_extension     ← dictionnaire<texte, réel> // en octets
-    pourcentage_par_extension ← dictionnaire<texte, réel>
-    fichiers_plus_volumineux ← liste<FichierInfo>
+    processes_list           ← liste de ProcessInfo  
+    top_cpu_processes        ← liste de ProcessInfo  
+    top_ram_processes        ← liste de ProcessInfo  
+    all_processes_count      ← entier  
 
-TYPE ProcessInfo :
-    pid          ← entier
-    name         ← texte
-    cpu_percent  ← réel
-    ram_percent  ← réel
+    // Analyse de fichiers  
+    dossier_a_analyser        ← texte  
+    extensions_base           ← liste[texte] ← [".txt", ".py", ".pdf", ".jpg"]  
+    extensions_etendues       ← liste[texte] ← [".txt", ".py", ".pdf", ".jpg", ".csv", ".log", ".md", ".json", ".xml", ".html", ".png"]  
 
-TYPE FichierInfo :
-    path         ← texte
-    size         ← réel
+    // Résultats d’analyse  
+    fichiers_par_extension    ← dictionnaire<texte, entier>  
+    espace_par_extension      ← dictionnaire<texte, réel>   // en octets  
+    pourcentage_par_extension ← dictionnaire<texte, réel>   // en % du nombre de fichiers  
+    fichiers_plus_volumineux  ← liste<FichierInfo>          // top 10  
 
-FONCTION AnalyserDossier(dossier: texte, extensions: liste[texte]) : RésultatFichiers
-    fichiers_par_extension ← dictionnaire vide
-    espace_par_extension   ← dictionnaire vide
-    fichiers_plus_volumineux ← liste vide
+    // Snapshot global  
+    snapshot                  ← dictionnaire  
 
-    total_fichiers ← 0
+TYPE ProcessInfo :  
+    pid          ← entier  
+    name         ← texte  
+    cpu_percent  ← réel  
+    ram_percent  ← réel  
 
-    POUR CHAQUE fichier DANS PARCOURS_RECURSIF(dossier) FAIRE
-        ext ← EXTENSION(fichier)
-        taille ← TAILLE_FICHIER(fichier)
-        total_fichiers ← total_fichiers + 1
+TYPE FichierInfo :  
+    path         ← texte  
+    size         ← réel  
 
-        SI ext DANS extensions ALORS
-            fichiers_par_extension[ext] ← fichiers_par_extension[ext] + 1 OU 1 SI NON EXISTE
-            espace_par_extension[ext] ← espace_par_extension[ext] + taille OU taille SI NON EXISTE
-            AJOUTER {path: fichier, size: taille} À fichiers_plus_volumineux
-        FIN SI
-    FIN POUR
+TYPE RésultatFichiers :  
+    fichiers_par_extension    ← dictionnaire<texte, entier>  
+    espace_par_extension      ← dictionnaire<texte, réel>  
+    pourcentage_par_extension ← dictionnaire<texte, réel>  
+    fichiers_plus_volumineux  ← liste<FichierInfo>  
 
-    POUR CHAQUE ext DANS fichiers_par_extension FAIRE
-        pourcentage_par_extension[ext] ← (fichiers_par_extension[ext] / total_fichiers) * 100
-    FIN POUR
+TYPE RésultatSnapshot :  
+    cpu            ← dictionnaire  
+    memory         ← dictionnaire  
+    system         ← dictionnaire  
+    processes      ← dictionnaire  
+    files_basic    ← RésultatFichiers  
+    files_advanced ← RésultatFichiers  
 
-    TRIER fichiers_plus_volumineux PAR size DESC
-    fichiers_plus_volumineux ← PRENDRE_TOP_N(fichiers_plus_volumineux, 10)
 
-    RETOURNE {fichiers_par_extension, espace_par_extension, pourcentage_par_extension, fichiers_plus_volumineux}
-FIN FONCTION
+FONCTION AnalyserDossier(dossier: texte, extensions: liste[texte]) : RésultatFichiers  
+    fichiers_par_extension    ← dictionnaire vide  
+    espace_par_extension      ← dictionnaire vide  
+    fichiers_plus_volumineux  ← liste vide  
+    total_fichiers            ← 0  
 
-FONCTION GetSystemSnapshot() : RésultatSnapshot
-    // CPU, RAM, Système, Processus existants 
-    cpu_cores_physical   ← OBTENIR_NOMBRE_COEURS_PHYSIQUES()
-    cpu_cores_logical    ← OBTENIR_NOMBRE_COEURS_LOGIQUES()
-    cpu_freq_current     ← OBTENIR_FREQUENCE_CPU_COURANTE()
-    cpu_usage_percent    ← MESURER_USAGE_CPU_GLOBAL()
+    POUR CHAQUE fichier DANS PARCOURS_RECURSIF(dossier) FAIRE  
+        ext    ← EXTENSION(fichier) EN MINUSCULE  
+        taille ← TAILLE_FICHIER(fichier) OU 0 SI ERREUR  
+        total_fichiers ← total_fichiers + 1  
 
-    ram_total            ← OBTENIR_RAM_TOTALE()
-    ram_used             ← OBTENIR_RAM_UTILISEE()
-    ram_usage_percent    ← CALCULER_POURCENTAGE_RAM_UTILISEE(ram_total, ram_used)
+        SI ext DANS extensions ALORS  
+            // Incrément du nombre de fichiers par extension  
+            SI ext EXISTE DANS fichiers_par_extension ALORS  
+                fichiers_par_extension[ext] ← fichiers_par_extension[ext] + 1  
+                espace_par_extension[ext]   ← espace_par_extension[ext] + taille  
+            SINON  
+                fichiers_par_extension[ext] ← 1  
+                espace_par_extension[ext]   ← taille  
+            FIN SI  
 
-    hostname             ← OBTENIR_NOM_MACHINE()
-    os_name              ← OBTENIR_NOM_OS()
-    os_version           ← OBTENIR_VERSION_OS()
-    boot_time_ts         ← OBTENIR_BOOT_TIME()
-    uptime_seconds       ← OBTENIR_TEMPS_PASSEPUIS_BOOT(boot_time_ts)
-    users_list           ← OBTENIR_UTILISATEURS_CONNECTES()
-    users_count          ← TAILLE(users_list)
-    ip_address           ← DETERMINER_IP_PRINCIPALE()
+            // Ajout à la liste des fichiers à trier par taille  
+            AJOUTER {path: fichier, size: taille} À fichiers_plus_volumineux  
+        FIN SI  
+    FIN POUR  
 
-    // Processus 
-    processes_list       ← VIDE
-    POUR CHAQUE proc DANS LISTE_DES_PROCESSUS_ACTIFS() FAIRE
-        info ← NOUVEL ProcessInfo
-        info.pid          ← OBTENIR_PID(proc)
-        info.name         ← OBTENIR_NOM_PROC(proc)
-        info.cpu_percent  ← MESURER_CPU_PROC(proc)
-        info.ram_percent  ← MESURER_RAM_PROC(proc)
-        AJOUTER info À processes_list
-    FIN POUR
+    // Calcul des pourcentages par extension (en nombre de fichiers)  
+    pourcentage_par_extension ← dictionnaire vide  
+    POUR CHAQUE ext DANS fichiers_par_extension FAIRE  
+        SI total_fichiers > 0 ALORS  
+            pourcentage_par_extension[ext] ← (fichiers_par_extension[ext] / total_fichiers) * 100  
+        SINON  
+            pourcentage_par_extension[ext] ← 0  
+        FIN SI  
+    FIN POUR  
 
-    top_cpu_processes ← PRENDRE_TOP_N(processes_list, 3, critere = cpu_percent)
-    top_ram_processes ← PRENDRE_TOP_N(processes_list, 3, critere = ram_percent)
+    // Tri des fichiers par taille et sélection des 10 plus gros  
+    TRIER fichiers_plus_volumineux PAR size DÉCROISSANT  
+    fichiers_plus_volumineux ← PRENDRE_TOP_N(fichiers_plus_volumineux, 10)  
 
-    // Analyse fichiers de base 
-    resultat_fichiers_base ← AnalyserDossier(dossier_a_analyser, extensions_base)
+    RETOURNE {  
+        fichiers_par_extension    : fichiers_par_extension,  
+        espace_par_extension      : espace_par_extension,  
+        pourcentage_par_extension : pourcentage_par_extension,  
+        fichiers_plus_volumineux  : fichiers_plus_volumineux  
+    }  
+FIN FONCTION  
 
-    // Analyse fichiers avancée 
-    resultat_fichiers_avance ← AnalyserDossier(dossier_a_analyser, extensions_etendues)
 
-    // Construction du résultat
-    snapshot ← DICTIONNAIRE
-    snapshot["cpu"]      ← {cores_physical: cpu_cores_physical, cores_logical: cpu_cores_logical, freq_current: cpu_freq_current, usage_percent: cpu_usage_percent}
-    snapshot["memory"]   ← {total: ram_total, used: ram_used, usage_percent: ram_usage_percent}
-    snapshot["system"]   ← {hostname: hostname, os: os_name, os_version: os_version, boot_time: boot_time_ts, uptime: uptime_seconds, users_count: users_count, users: users_list, ip: ip_address}
-    snapshot["processes"]← processes_list
-    snapshot["top_cpu"]  ← top_cpu_processes
-    snapshot["top_ram"]  ← top_ram_processes
-    snapshot["files_basic"]   ← resultat_fichiers_base
-    snapshot["files_advanced"]← resultat_fichiers_avance
+FONCTION GetSystemSnapshot() : RésultatSnapshot  
+    // --- CPU ---  
+    cpu_cores_physical ← OBTENIR_NOMBRE_COEURS_PHYSIQUES()  
+    cpu_cores_logical  ← OBTENIR_NOMBRE_COEURS_LOGIQUES()  
+    cpu_freq_current   ← OBTENIR_FREQUENCE_CPU_COURANTE()  
+    // Mesure du CPU global avec un petit intervalle pour avoir une valeur réaliste  
+    cpu_usage_percent  ← MESURER_USAGE_CPU_GLOBAL(intervalle = 0.3)  
 
-    RETOURNE snapshot
-FIN FONCTION
+    // --- RAM ---  
+    ram_total         ← OBTENIR_RAM_TOTALE()  
+    ram_used          ← OBTENIR_RAM_UTILISEE()  
+    // Dans le code, le pourcentage vient directement de psutil (pas d’un calcul perso)  
+    ram_usage_percent ← OBTENIR_POURCENTAGE_RAM_UTILISEE()  
 
-DEBUT
-    dossier_a_analyser ← "/home/votre_utilisateur/Documents"
-    resultat ← GetSystemSnapshot()
-    AFFICHER resultat
-FIN
+    // --- SYSTÈME ---  
+    hostname     ← OBTENIR_NOM_MACHINE()  
+    os_name      ← OBTENIR_NOM_OS()  
+    os_version   ← OBTENIR_VERSION_OS()  
+    boot_time_ts ← OBTENIR_BOOT_TIME_TIMESTAMP()  
+
+    maintenant_ts  ← OBTENIR_TIMESTAMP_ACTUEL()  
+    uptime_seconds ← ENTIER(maintenant_ts − boot_time_ts)  
+
+    users_list  ← OBTENIR_UTILISATEURS_CONNECTES()   // liste de noms  
+    users_count ← TAILLE(users_list)  
+
+    ip_address ← DETERMINER_IP_PRINCIPALE_VIA_SOCKET()  
+    // (par ex. socket UDP vers 8.8.8.8 puis lecture de l’adresse locale)  
+
+    // --- PROCESSUS (2 passes pour CPU %) ---  
+
+    // Première passe : amorcer les compteurs CPU des processus  
+    POUR CHAQUE p DANS LISTE_DES_PROCESSUS_ACTIFS() FAIRE  
+        TENTER p.cpu_percent(None)   // initialisation des compteurs  
+        SI ERREUR ALORS IGNORER  
+    FIN POUR  
+
+    // Petite pause pour laisser le temps à la mesure CPU de se stabiliser  
+    ATTENDRE(0.2 secondes)  
+
+    // Deuxième passe : récupération des vraies valeurs CPU / RAM des processus  
+    processes_list ← liste vide  
+
+    POUR CHAQUE proc DANS LISTE_DES_PROCESSUS_ACTIFS_AVEC_INFOS() FAIRE  
+        info             ← NOUVEL ProcessInfo  
+        info.pid         ← OBTENIR_PID(proc)  
+        info.name        ← OBTENIR_NOM_PROC(proc)  
+        info.cpu_percent ← LIRE_CPU_PERCENT_PROC(proc)  
+        info.ram_percent ← LIRE_RAM_PERCENT_PROC(proc)  
+
+        AJOUTER info À processes_list  
+    FIN POUR  
+
+    all_processes_count ← TAILLE(processes_list)  
+
+    top_cpu_processes ← PRENDRE_TOP_N(processes_list, 3, critere = cpu_percent, ordre = décroissant)  
+    top_ram_processes ← PRENDRE_TOP_N(processes_list, 3, critere = ram_percent, ordre = décroissant)  
+
+    // --- ANALYSE FICHIERS ---  
+    resultat_fichiers_base    ← AnalyserDossier(dossier_a_analyser, extensions_base)  
+    resultat_fichiers_avance  ← AnalyserDossier(dossier_a_analyser, extensions_etendues)  
+
+    // --- CONSTRUCTION DU SNAPSHOT ---  
+    snapshot ← DICTIONNAIRE  
+
+    snapshot["cpu"] ← {  
+        cores_physical : cpu_cores_physical,  
+        cores_logical  : cpu_cores_logical,  
+        freq_current   : cpu_freq_current,  
+        usage_percent  : cpu_usage_percent  
+    }  
+
+    snapshot["memory"] ← {  
+        total         : ram_total,  
+        used          : ram_used,  
+        usage_percent : ram_usage_percent  
+    }  
+
+    snapshot["system"] ← {  
+        hostname    : hostname,  
+        os          : os_name,  
+        os_version  : os_version,  
+        boot_time   : boot_time_ts,  
+        uptime      : uptime_seconds,  
+        users_count : users_count,  
+        users       : users_list,  
+        ip          : ip_address  
+    }  
+
+    snapshot["processes"] ← {  
+        all_count : all_processes_count,  
+        top_cpu   : top_cpu_processes,  
+        top_ram   : top_ram_processes  
+    }  
+
+    snapshot["files_basic"]    ← resultat_fichiers_base  
+    snapshot["files_advanced"] ← resultat_fichiers_avance  
+
+    RETOURNE snapshot  
+FIN FONCTION  
+
+
+FONCTION CreerPageWeb(snapshot: RésultatSnapshot)  
+    // Charge le template HTML, remplace les {{placeholders}} et écrit index.html  
+
+    html ← LIRE_FICHIER_TEXTE("template.html")  
+
+    // Remplacement des valeurs système, CPU, RAM, processus, fichiers…
+    // (idée générale, les détails sont gérés dans le code Python)  
+    html ← REMPLACER_PLACEHOLDERS_AVEC_SNAPSHOT(html, snapshot)  
+
+    ÉCRIRE_FICHIER_TEXTE("index.html", html)  
+FIN FONCTION  
+
+
+DEBUT PROGRAMME  
+    dossier_a_analyser ← "C:/school/aaa"   // chemin du projet à analyser  
+
+    TANT QUE VRAI FAIRE  
+        snapshot ← GetSystemSnapshot()  
+        CreerPageWeb(snapshot)  
+        AFFICHER "index.html mis à jour" DANS LA CONSOLE  
+        ATTENDRE(10 secondes)  
+    FIN TANT QUE  
+FIN  

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="System Monitoring Dashboard - Real-time system statistics and performance metrics">
+    <title>System Monitor Dashboard</title>
+    <link rel="stylesheet" href="template.css">
+    <meta http-equiv="refresh" content="30">
+</head>
+<body>
+    <header class="dashboard-header">
+        <div class="header-content">
+            <div class="header-left">
+                <div class="logo">
+                    <span class="logo-icon">◉</span>
+                </div>
+                <div class="header-text">
+                    <h1>System Monitor</h1>
+                    <p class="header-subtitle">Real-time Performance Dashboard</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="status-indicator">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Live</span>
+                </div>
+                <div class="timestamp">
+                    <span class="timestamp-label">Last updated:</span>
+                    <span class="timestamp-value">{{timestamp}}</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-main">
+        <section class="dashboard-card" id="system-section">
+            <div class="card-header">
+                <span class="card-icon">
+                    <img src="./icons/Shield.png" alt="system icon" style="width: auto; height: auto;"/>
+                </span>
+                <h2 class="card-title">System</h2>
+            </div>
+            <div class="card-content">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Machine Name</span>
+                        <span class="info-value">{{machine_name}}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Operating System</span>
+                        <span class="info-value">{{os_name}}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">OS Version</span>
+                        <span class="info-value">{{os_version}}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Boot Time (Timestamp)</span>
+                        <span class="info-value">{{boot_time}}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Uptime</span>
+                        <span class="info-value highlight-green">{{uptime}}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Active Users</span>
+                        <span class="info-value highlight-blue">{{user_count}}</span>
+                    </div>
+                    <div class="info-item full-width">
+                        <span class="info-label">Users List</span>
+                        <span class="info-value mono">{{users_list}}</span>
+                    </div>
+                    <div class="info-item full-width">
+                        <span class="info-label">Primary IP Address</span>
+                        <span class="info-value mono">{{primary_ip}}</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="dashboard-card" id="cpu-section">
+            <div class="card-header">
+                <span class="card-icon">
+                    <img src="./icons/Cpu.png" alt="cpu icon" style="width: auto; height: auto;"/>
+                </span>
+                <h2 class="card-title">CPU</h2>
+            </div>
+            <div class="card-content">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Logical Cores</span>
+                        <span class="info-value">{{cpu_cores}}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Physical Cores</span>
+                        <span class="info-value">{{cores_physical}}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Frequency (MHz)</span>
+                        <span class="info-value">{{cpu_frequency}}</span>
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-header">
+                        <span class="progress-label">CPU Usage</span>
+                        <span class="progress-value">{{cpu_percent}}%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill progress-cpu" style="width: {{cpu_percent}}%;"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="dashboard-card" id="memory-section">
+            <div class="card-header">
+                <span class="card-icon">
+                    <img src="./icons/Save.png" alt="memory icon" style="width: auto; height: auto;"/>
+                </span>
+            <h2 class="card-title">Memory</h2>
+            </div>
+            <div class="card-content">
+                <div class="memory-stats">
+                    <div class="memory-stat">
+                        <span class="stat-value">{{memory_total}}</span>
+                        <span class="stat-label">Total RAM (GB)</span>
+                    </div>
+                    <div class="memory-stat">
+                        <span class="stat-value highlight-yellow">{{memory_used}}</span>
+                        <span class="stat-label">Used (GB)</span>
+                    </div>
+                    <div class="memory-stat">
+                        <span class="stat-value highlight-green">{{memory_available}}</span>
+                        <span class="stat-label">Available (GB)</span>
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-header">
+                        <span class="progress-label">Memory Usage</span>
+                        <span class="progress-value">{{memory_percent}}%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill progress-memory" style="width: {{memory_percent}}%;"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="dashboard-card" id="process-section">
+            <div class="card-header">
+                <span class="card-icon">
+                    <img src="./icons/Star.png" alt="process icon" style="width: auto; height: auto;"/>
+                </span>
+                <h2 class="card-title">Top Processes (Count: {{all_count}})</h2>
+            </div>
+            <div class="card-content">
+                <h3 class="subsection-title">Top 3 CPU Usage</h3>
+                <table class="process-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>CPU %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="process-name">{{process1_name}}</td>
+                            <td class="process-cpu highlight-yellow">{{process1_cpu}}%</td>
+                        </tr>
+                        <tr>
+                            <td class="process-name">{{process2_name}}</td>
+                            <td class="process-cpu">{{process2_cpu}}%</td>
+                        </tr>
+                        <tr>
+                            <td class="process-name">{{process3_name}}</td>
+                            <td class="process-cpu">{{process3_cpu}}%</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3 class="subsection-title" style="margin-top: 20px;">Top 3 RAM Usage</h3>
+                <table class="process-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>RAM %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="process-name">{{ram_process1_name}}</td>
+                            <td class="process-mem highlight-yellow">{{ram_process1_usage}}%</td>
+                        </tr>
+                        <tr>
+                            <td class="process-name">{{ram_process2_name}}</td>
+                            <td class="process-mem">{{ram_process2_usage}}%</td>
+                        </tr>
+                        <tr>
+                            <td class="process-name">{{ram_process3_name}}</td>
+                            <td class="process-mem">{{ram_process3_usage}}%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="dashboard-card full-width" id="files-section">
+            <div class="card-header">
+                <span class="card-icon">
+                    <img src="./icons/File.png" alt="file icon" style="width: auto; height: auto;"/>
+                </span>
+                <h2 class="card-title">File Statistics (Directory: {{directory_to_analyze}})</h2>
+            </div>
+            <div class="card-content">
+                <div class="files-summary">
+                    <div class="file-stat-box">
+                        <span class="file-stat-value highlight-blue">{{total_processes}}</span>
+                        <span class="file-stat-label">Total Processes</span>
+                    </div>
+                    <div class="file-stat-box">
+                        <span class="file-stat-value highlight-purple">{{total_basic_files}}</span>
+                        <span class="file-stat-label">Total Files (Basic)</span>
+                    </div>
+                    <div class="file-stat-box">
+                        <span class="file-stat-value highlight-yellow">{{total_extended_files}}</span>
+                        <span class="file-stat-label">Total Files (Advanced)</span>
+                    </div>
+                </div>
+
+                <h3 class="subsection-title">Basic Extensions Analysis (.txt, .py, .pdf, .jpg)</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">TXT Files</span>
+                        <span class="info-value">{{txt_count}}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">PY Files</span>
+                        <span class="info-value">{{py_count}}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">PDF Files</span>
+                        <span class="info-value">{{pdf_count}}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">JPG Files</span>
+                        <span class="info-value">{{jpg_count}}</span>
+                    </div>
+                </div>
+
+                <h3 class="subsection-title" style="margin-top: 20px;">Advanced Analysis Results</h3>
+                <div class="info-grid">
+                    <div class="info-item full-width">
+                        <span class="info-label">Count by Extension (Advanced)</span>
+                        <span class="info-value mono">{{advanced_files_by_extension}}</span>
+                    </div>
+                    <div class="info-item full-width">
+                        <span class="info-label">Space used by Extension (Bytes)</span>
+                        <span class="info-value mono">{{advanced_space_by_extension}}</span>
+                    </div>
+                    <div class="info-item full-width">
+                        <span class="info-label">Percentage by Extension</span>
+                        <span class="info-value mono">{{advanced_percentage_by_extension}}</span>
+                    </div>
+                </div>
+                
+                <h3 class="subsection-title" style="margin-top: 20px;">Top 10 Largest Files</h3>
+                <table class="process-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%;">#</th>
+                            <th>File Path</th>
+                            <th style="width: 20%;">Size (Bytes)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>1</td><td class="process-name">{{largest_file_1_path}}</td><td class="process-mem">{{largest_file_1_size}}</td></tr>
+                        <tr><td>2</td><td class="process-name">{{largest_file_2_path}}</td><td class="process-mem">{{largest_file_2_size}}</td></tr>
+                        <tr><td>3</td><td class="process-name">{{largest_file_3_path}}</td><td class="process-mem">{{largest_file_3_size}}</td></tr>
+                        <tr><td>4</td><td class="process-name">{{largest_file_4_path}}</td><td class="process-mem">{{largest_file_4_size}}</td></tr>
+                        <tr><td>5</td><td class="process-name">{{largest_file_5_path}}</td><td class="process-mem">{{largest_file_5_size}}</td></tr>
+                        <tr><td>6</td><td class="process-name">{{largest_file_6_path}}</td><td class="process-mem">{{largest_file_6_size}}</td></tr>
+                        <tr><td>7</td><td class="process-name">{{largest_file_7_path}}</td><td class="process-mem">{{largest_file_7_size}}</td></tr>
+                        <tr><td>8</td><td class="process-name">{{largest_file_8_path}}</td><td class="process-mem">{{largest_file_8_size}}</td></tr>
+                        <tr><td>9</td><td class="process-name">{{largest_file_9_path}}</td><td class="process-mem">{{largest_file_9_size}}</td></tr>
+                        <tr><td>10</td><td class="process-name">{{largest_file_10_path}}</td><td class="process-mem">{{largest_file_10_size}}</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer class="dashboard-footer">
+        <div class="footer-content">
+            <p class="footer-text">
+                Generated by <strong>System Monitor</strong>
+            </p>
+            <p class="footer-timestamp">
+                Report generated at: {{generation_time}}
+            </p>
+        </div>
+    </footer>
+</body>
+</html>

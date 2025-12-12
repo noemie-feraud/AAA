@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="System Monitoring Dashboard - Real-time system statistics and performance metrics">
+    <title>System Monitor Dashboard</title>
+    <link rel="stylesheet" href="template.css">
+    <meta http-equiv="refresh" content="30">
+</head>
+<body>
+    <header class="dashboard-header">
+        <div class="header-content">
+            <div class="header-left">
+                <div class="logo">
+                    <span class="logo-icon">◉</span>
+                </div>
+                <div class="header-text">
+                    <h1>System Monitor</h1>
+                    <p class="header-subtitle">Real-time Performance Dashboard</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="status-indicator">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Live</span>
+                </div>
+                <div class="timestamp">
+                    <span class="timestamp-label">Last updated:</span>
+                    <span class="timestamp-value">01:49:05</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-main">
+        <section class="dashboard-card" id="system-section">
+            <div class="card-header">
+                <span class="card-icon">
+                    <img src="./icons/Shield.png" alt="system icon" style="width: auto; height: auto;"/>
+                </span>
+                <h2 class="card-title">System</h2>
+            </div>
+            <div class="card-content">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Machine Name</span>
+                        <span class="info-value">Massilia</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Operating System</span>
+                        <span class="info-value">Windows</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">OS Version</span>
+                        <span class="info-value">10.0.26100</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Boot Time (Timestamp)</span>
+                        <span class="info-value">2025-12-11 11:29:00</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Uptime</span>
+                        <span class="info-value highlight-green">14h 20m 00s</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Active Users</span>
+                        <span class="info-value highlight-blue">1</span>
+                    </div>
+                    <div class="info-item full-width">
+                        <span class="info-label">Users List</span>
+                        <span class="info-value mono">['btyma']</span>
+                    </div>
+                    <div class="info-item full-width">
+                        <span class="info-label">Primary IP Address</span>
+                        <span class="info-value mono">192.168.1.24</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="dashboard-card" id="cpu-section">
+            <div class="card-header">
+                <span class="card-icon">
+                    <img src="./icons/Cpu.png" alt="cpu icon" style="width: auto; height: auto;"/>
+                </span>
+                <h2 class="card-title">CPU</h2>
+            </div>
+            <div class="card-content">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Logical Cores</span>
+                        <span class="info-value">16</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Physical Cores</span>
+                        <span class="info-value">8</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Frequency (MHz)</span>
+                        <span class="info-value">2000.0</span>
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-header">
+                        <span class="progress-label">CPU Usage</span>
+                        <span class="progress-value">7.5%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill progress-cpu" style="width: 7.5%;"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="dashboard-card" id="memory-section">
+            <div class="card-header">
+                <span class="card-icon">
+                    <img src="./icons/Save.png" alt="memory icon" style="width: auto; height: auto;"/>
+                </span>
+            <h2 class="card-title">Memory</h2>
+            </div>
+            <div class="card-content">
+                <div class="memory-stats">
+                    <div class="memory-stat">
+                        <span class="stat-value">31.12 GB</span>
+                        <span class="stat-label">Total RAM (GB)</span>
+                    </div>
+                    <div class="memory-stat">
+                        <span class="stat-value highlight-yellow">19.91 GB</span>
+                        <span class="stat-label">Used (GB)</span>
+                    </div>
+                    <div class="memory-stat">
+                        <span class="stat-value highlight-green">11.21 GB</span>
+                        <span class="stat-label">Available (GB)</span>
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-header">
+                        <span class="progress-label">Memory Usage</span>
+                        <span class="progress-value">64.0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill progress-memory" style="width: 64.0%;"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="dashboard-card" id="process-section">
+            <div class="card-header">
+                <span class="card-icon">
+                    <img src="./icons/Star.png" alt="process icon" style="width: auto; height: auto;"/>
+                </span>
+                <h2 class="card-title">Top Processes (Count: 322)</h2>
+            </div>
+            <div class="card-content">
+                <h3 class="subsection-title">Top 3 CPU Usage</h3>
+                <table class="process-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>CPU %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="process-name">System Idle Process</td>
+                            <td class="process-cpu highlight-yellow">1425.20%</td>
+                        </tr>
+                        <tr>
+                            <td class="process-name">python.exe</td>
+                            <td class="process-cpu">91.00%</td>
+                        </tr>
+                        <tr>
+                            <td class="process-name">vmware-vmx.exe</td>
+                            <td class="process-cpu">20.00%</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3 class="subsection-title" style="margin-top: 20px;">Top 3 RAM Usage</h3>
+                <table class="process-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>RAM %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="process-name">vmware-vmx.exe</td>
+                            <td class="process-mem highlight-yellow">25.37%</td>
+                        </tr>
+                        <tr>
+                            <td class="process-name">MemCompression</td>
+                            <td class="process-mem">5.15%</td>
+                        </tr>
+                        <tr>
+                            <td class="process-name">chrome.exe</td>
+                            <td class="process-mem">2.63%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="dashboard-card full-width" id="files-section">
+            <div class="card-header">
+                <span class="card-icon">
+                    <img src="./icons/File.png" alt="file icon" style="width: auto; height: auto;"/>
+                </span>
+                <h2 class="card-title">File Statistics (Directory: C:/school/aaa)</h2>
+            </div>
+            <div class="card-content">
+                <div class="files-summary">
+                    <div class="file-stat-box">
+                        <span class="file-stat-value highlight-blue">322</span>
+                        <span class="file-stat-label">Total Processes</span>
+                    </div>
+                    <div class="file-stat-box">
+                        <span class="file-stat-value highlight-purple">3</span>
+                        <span class="file-stat-label">Total Files (Basic)</span>
+                    </div>
+                    <div class="file-stat-box">
+                        <span class="file-stat-value highlight-yellow">36</span>
+                        <span class="file-stat-label">Total Files (Advanced)</span>
+                    </div>
+                </div>
+
+                <h3 class="subsection-title">Basic Extensions Analysis (.txt, .py, .pdf, .jpg)</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">TXT Files</span>
+                        <span class="info-value">2</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">PY Files</span>
+                        <span class="info-value">1</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">PDF Files</span>
+                        <span class="info-value">0</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">JPG Files</span>
+                        <span class="info-value">0</span>
+                    </div>
+                </div>
+
+                <h3 class="subsection-title" style="margin-top: 20px;">Advanced Analysis Results</h3>
+                <div class="info-grid">
+                    <div class="info-item full-width">
+                        <span class="info-label">Count by Extension (Advanced)</span>
+                        <span class="info-value mono">{'.html': 2, '.py': 1, '.md': 1, '.png': 30, '.txt': 2}</span>
+                    </div>
+                    <div class="info-item full-width">
+                        <span class="info-label">Space used by Extension (Bytes)</span>
+                        <span class="info-value mono">{'.html': 30329, '.py': 14315, '.md': 3085, '.png': 203560, '.txt': 17854}</span>
+                    </div>
+                    <div class="info-item full-width">
+                        <span class="info-label">Percentage by Extension</span>
+                        <span class="info-value mono">{'.html': '1.85%', '.py': '0.93%', '.md': '0.93%', '.png': '27.78%', '.txt': '1.85%'}</span>
+                    </div>
+                </div>
+                
+                <h3 class="subsection-title" style="margin-top: 20px;">Top 10 Largest Files</h3>
+                <table class="process-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%;">#</th>
+                            <th>File Path</th>
+                            <th style="width: 20%;">Size (Bytes)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>1</td><td class="process-name">C:/school/aaa\screenshots\index.png</td><td class="process-mem">147364</td></tr>
+                        <tr><td>2</td><td class="process-name">C:/school/aaa\screenshots\Terminal.png</td><td class="process-mem">20830</td></tr>
+                        <tr><td>3</td><td class="process-name">C:/school/aaa\template.html</td><td class="process-mem">15365</td></tr>
+                        <tr><td>4</td><td class="process-name">C:/school/aaa\index.html</td><td class="process-mem">14964</td></tr>
+                        <tr><td>5</td><td class="process-name">C:/school/aaa\monitor.py</td><td class="process-mem">14315</td></tr>
+                        <tr><td>6</td><td class="process-name">C:/school/aaa\pseudo-code\pseudocode.txt</td><td class="process-mem">9559</td></tr>
+                        <tr><td>7</td><td class="process-name">C:/school/aaa\pseudo-code\ideation.txt</td><td class="process-mem">8295</td></tr>
+                        <tr><td>8</td><td class="process-name">C:/school/aaa\README.md</td><td class="process-mem">3085</td></tr>
+                        <tr><td>9</td><td class="process-name">C:/school/aaa\icons\Settings.png</td><td class="process-mem">2215</td></tr>
+                        <tr><td>10</td><td class="process-name">C:/school/aaa\icons\language.png</td><td class="process-mem">2146</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer class="dashboard-footer">
+        <div class="footer-content">
+            <p class="footer-text">
+                Generated by <strong>System Monitor</strong>
+            </p>
+            <p class="footer-timestamp">
+                Report generated at: 2025-12-12 01:49:05
+            </p>
+        </div>
+    </footer>
+</body>
+</html>
