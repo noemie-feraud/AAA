@@ -30,28 +30,30 @@ Les données sont collectées par `monitor.py` puis injectées dans `template.ht
 bash
 Copier le code
 (dans le dossier du projet, venv activé si utilisé)
-pip install psutil
 
-##Utilisation
+```pip install psutil
+
+## Utilisation
 
 # Comment lancer le script
 
 bash
 Copier le code
+
 # Windows
-python monitor.py
+```python monitor.py
 
 # Linux / macOS
-python3 monitor.py
-Le script régénère index.html toutes les 10 secondes.
+```python3 monitor.py
+- Le script régénère index.html toutes les 30 secondes.
 
 # Ouvrir index.html dans le navigateur
 
-Lancer monitor.py.
+1. Lancer monitor.py.
 
-Ouvrir index.html dans le navigateur (double-clic ou “Ouvrir un fichier”).
+2. Ouvrir index.html dans le navigateur (double-clic ou “Ouvrir un fichier”).
 
-Laisser l’onglet ouvert : une balise <meta http-equiv="refresh" content="10"> force le rafraîchissement automatique.
+3. Laisser l’onglet ouvert : une balise <meta http-equiv="refresh" content="10"> force le rafraîchissement automatique.
 
 ## Fonctionnalitées 
 
